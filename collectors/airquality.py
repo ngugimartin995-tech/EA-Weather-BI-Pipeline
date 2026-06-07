@@ -105,17 +105,18 @@ def _save_raw(raw: dict, city_name: str, kind: str) -> None:
 
 # ── Collect all cities ─────────────────────────────────────────────────────
 
-def collect_all(api_key: str | None = None) -> list[dict]:
+def collect_all(api_key: str | None = None, cities: list[dict] | None = None) -> list[dict]:
     """
-    Fetch air quality for all configured cities.
+    Fetch air quality for all configured cities (or a supplied subset).
     Returns a list of parsed dicts (skips cities that errored).
     """
     api_key = api_key or os.getenv("OWM_API_KEY")
     if not api_key:
         raise EnvironmentError("OWM_API_KEY not set — check your .env file.")
 
+    targets = cities if cities is not None else CITIES
     results = []
-    for city in CITIES:
+    for city in targets:
         log.info("Fetching air quality → %s", city["name"])
         record = fetch_airquality(city, api_key)
         if record:
@@ -134,7 +135,7 @@ def collect_all(api_key: str | None = None) -> list[dict]:
 
         time.sleep(REQUEST_DELAY)
 
-    log.info("Air quality collection complete: %d/%d cities", len(results), len(CITIES))
+    log.info("Air quality collection complete: %d/%d cities", len(results), len(targets))
     return results
 
 
