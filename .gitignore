@@ -31,3 +31,6 @@ airflow/airflow.cfg
 # OS
 .DS_Store
 Thumbs.db
+
+# Pipeline logs
+pipeline.log
