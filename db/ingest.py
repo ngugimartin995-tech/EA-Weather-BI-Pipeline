@@ -11,6 +11,7 @@ import os
 import pandas as pd
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
+from sqlalchemy.engine import URL
 from sqlalchemy.orm import sessionmaker, Session
 
 from db.models import Base, City, WeatherReading, AirQualityReading
@@ -22,12 +23,18 @@ log = logging.getLogger("db.ingest")
 # ── Engine ─────────────────────────────────────────────────────────────────
 
 def get_engine():
-    """Build a SQLAlchemy engine from environment variables."""
-    url = (
-        f"postgresql+psycopg2://"
-        f"{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
-        f"@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', 5432)}"
-        f"/{os.getenv('DB_NAME', 'eaweather')}"
+    """
+    Build a SQLAlchemy engine from environment variables.
+    Uses URL.create() instead of a raw URL string so that special characters
+    in the password ($ ? = etc.) are handled safely without manual encoding.
+    """
+    url = URL.create(
+        drivername="postgresql+psycopg2",
+        username=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST", "localhost"),
+        port=int(os.getenv("DB_PORT", 5432)),
+        database=os.getenv("DB_NAME", "eaweather"),
     )
     return create_engine(url, pool_pre_ping=True)
 
