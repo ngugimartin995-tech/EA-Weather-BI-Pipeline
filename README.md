@@ -349,12 +349,43 @@ pytz>=2023.3
 
 ## 🗺️ Target Cities
 
+25 cities across East and Central Africa. The original 4 (Nairobi, Mombasa,
+Kampala, Dar es Salaam) are kept first in `collectors/config.py` and
+`db/schema.sql` so existing data continuity is preserved.
+
 | City | Country | Latitude | Longitude |
 |---|---|---|---|
 | Nairobi | Kenya | -1.2864 | 36.8172 |
 | Mombasa | Kenya | -4.0435 | 39.6682 |
+| Kisumu | Kenya | -0.0917 | 34.7680 |
 | Kampala | Uganda | 0.3476 | 32.5825 |
 | Dar es Salaam | Tanzania | -6.7924 | 39.2083 |
+| Dodoma | Tanzania | -6.1630 | 35.7516 |
+| Arusha | Tanzania | -3.3869 | 36.6830 |
+| Kigali | Rwanda | -1.9441 | 30.0619 |
+| Bujumbura | Burundi | -3.3614 | 29.3599 |
+| Juba | South Sudan | 4.8594 | 31.5713 |
+| Addis Ababa | Ethiopia | 9.0301 | 38.7400 |
+| Dire Dawa | Ethiopia | 9.5931 | 41.8500 |
+| Mogadishu | Somalia | 2.0469 | 45.3182 |
+| Djibouti City | Djibouti | 11.5886 | 43.1456 |
+| Asmara | Eritrea | 15.3229 | 38.9251 |
+| Kinshasa | DR Congo | -4.4419 | 15.2663 |
+| Lubumbashi | DR Congo | -11.6609 | 27.4794 |
+| Goma | DR Congo | -1.6792 | 29.2228 |
+| Brazzaville | Rep. of Congo | -4.2634 | 15.2429 |
+| Yaoundé | Cameroon | 3.8480 | 11.5021 |
+| Douala | Cameroon | 4.0511 | 9.7679 |
+| Bangui | Central African Rep. | 4.3947 | 18.5582 |
+| N'Djamena | Chad | 12.1348 | 15.0557 |
+| Libreville | Gabon | 0.4162 | 9.4673 |
+| Malabo | Equatorial Guinea | 3.7523 | 8.7741 |
+
+**OWM free tier rate limit check:** 25 cities × 24 hourly weather calls/day
+= 600 calls/day. 25 cities × 8 AQI calls/day (every 3h) = 200 calls/day.
+**Total: ~800 calls/day**, under the 1,000/day free tier limit — but with
+limited headroom for manual `workflow_dispatch` runs. Monitor usage at
+[openweathermap.org/price](https://openweathermap.org/price) if adding more cities.
 
 ---
 
@@ -380,5 +411,4 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-*Built for the ETL/BI Pipeline Project — deadline 23–25 June 2026*
-Testing the token saving.
+*Built for the ETL/BI Pipeline Project*
