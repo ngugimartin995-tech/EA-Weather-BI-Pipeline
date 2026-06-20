@@ -1,0 +1,59 @@
+# .github/workflows/export_csv.yml
+#
+# Exports Supabase tables to CSV and commits them to the repo, so Power BI
+# can ingest fresh data via the Web connector instead of the PostgreSQL
+# connector (which has a confirmed compatibility gap with Supabase's free
+# tier — see pipeline/export_csv.py for the full explanation).
+#
+# Runs 20 minutes after the air quality pipeline (which runs at :00 every
+# 3 hours), giving that run time to finish writing before we export.
+
+name: Export CSV for Power BI
+
+on:
+  schedule:
+    - cron: "20 */3 * * *"
+
+  workflow_dispatch:
+
+jobs:
+  export-and-commit:
+    runs-on: ubuntu-latest
+
+    # Required so the built-in GITHUB_TOKEN can push commits back to this repo.
+    # If this still fails with a permissions error, check:
+    # repo Settings → Actions → General → Workflow permissions →
+    # "Read and write permissions"
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install pandas sqlalchemy psycopg2-binary python-dotenv
+
+      - name: Export tables to CSV
+        env:
+          DB_HOST:     ${{ secrets.DB_HOST }}
+          DB_PORT:     ${{ secrets.DB_PORT }}
+          DB_NAME:     ${{ secrets.DB_NAME }}
+          DB_USER:     ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: python -m pipeline.export_csv
+
+      - name: Commit and push CSV files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add powerbi_exports/*.csv
+          git diff --quiet --cached || git commit -m "chore: update Power BI CSV exports [skip ci]"
+          git push
