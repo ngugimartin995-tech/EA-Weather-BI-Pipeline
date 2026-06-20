@@ -411,4 +411,4 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-*Built for the ETL/BI Pipeline Project*
+*Built for the ETL/BI Pipeline Project.*
